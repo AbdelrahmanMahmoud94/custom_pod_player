@@ -43,6 +43,7 @@ class PodVideoPlayer extends StatefulWidget {
   final Widget Function()? onVideoError;
   final Widget? videoTitle;
   final Color? backgroundColor;
+  final bool? isCenter;
   final DecorationImage? videoThumbnail;
 
   /// Optional callback, fired when full screen mode toggles.
@@ -67,6 +68,7 @@ class PodVideoPlayer extends StatefulWidget {
     this.videoTitle,
     this.matchVideoAspectRatioToFrame = false,
     this.matchFrameAspectRatioToVideo = false,
+    this.isCenter = false,
     this.onVideoError,
     this.backgroundColor,
     this.videoThumbnail,
@@ -186,28 +188,50 @@ class _PodVideoPlayerState extends State<PodVideoPlayer>
           _frameAspectRatio = widget.matchFrameAspectRatioToVideo
               ? _podCtr.videoCtr?.value.aspectRatio ?? widget.frameAspectRatio
               : widget.frameAspectRatio;
-          return Center(
-            child: ColoredBox(
-              color: widget.backgroundColor ?? Colors.black,
-              child: GetBuilder<PodGetXVideoController>(
-                tag: widget.controller.getTag,
-                id: 'errorState',
-                builder: (podCtr) {
-                  /// Check if has any error
-                  if (podCtr.podVideoState == PodVideoState.error) {
-                    return widget.onVideoError?.call() ?? videoErrorWidget;
-                  }
+          return widget.isCenter!
+              ? Center(
+                  child: ColoredBox(
+                    color: widget.backgroundColor ?? Colors.black,
+                    child: GetBuilder<PodGetXVideoController>(
+                      tag: widget.controller.getTag,
+                      id: 'errorState',
+                      builder: (podCtr) {
+                        /// Check if has any error
+                        if (podCtr.podVideoState == PodVideoState.error) {
+                          return widget.onVideoError?.call() ??
+                              videoErrorWidget;
+                        }
 
-                  return AspectRatio(
-                    aspectRatio: _frameAspectRatio,
-                    child: podCtr.videoCtr?.value.isInitialized ?? false
-                        ? _buildPlayer()
-                        : Center(child: circularProgressIndicator),
-                  );
-                },
-              ),
-            ),
-          );
+                        return AspectRatio(
+                          aspectRatio: _frameAspectRatio,
+                          child: podCtr.videoCtr?.value.isInitialized ?? false
+                              ? _buildPlayer()
+                              : Center(child: circularProgressIndicator),
+                        );
+                      },
+                    ),
+                  ),
+                )
+              : ColoredBox(
+                  color: widget.backgroundColor ?? Colors.black,
+                  child: GetBuilder<PodGetXVideoController>(
+                    tag: widget.controller.getTag,
+                    id: 'errorState',
+                    builder: (podCtr) {
+                      /// Check if has any error
+                      if (podCtr.podVideoState == PodVideoState.error) {
+                        return widget.onVideoError?.call() ?? videoErrorWidget;
+                      }
+
+                      return AspectRatio(
+                        aspectRatio: _frameAspectRatio,
+                        child: podCtr.videoCtr?.value.isInitialized ?? false
+                            ? _buildPlayer()
+                            : Center(child: circularProgressIndicator),
+                      );
+                    },
+                  ),
+                );
         },
       ),
     );
