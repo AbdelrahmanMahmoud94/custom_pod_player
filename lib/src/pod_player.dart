@@ -178,35 +178,38 @@ class _PodVideoPlayerState extends State<PodVideoPlayer>
         ),
       ),
     );
-    return GetBuilder<PodGetXVideoController>(
-      tag: widget.controller.getTag,
-      builder: (_) {
-        _frameAspectRatio = widget.matchFrameAspectRatioToVideo
-            ? _podCtr.videoCtr?.value.aspectRatio ?? widget.frameAspectRatio
-            : widget.frameAspectRatio;
-        return Center(
-          child: ColoredBox(
-            color: widget.backgroundColor ?? Colors.black,
-            child: GetBuilder<PodGetXVideoController>(
-              tag: widget.controller.getTag,
-              id: 'errorState',
-              builder: (podCtr) {
-                /// Check if has any error
-                if (podCtr.podVideoState == PodVideoState.error) {
-                  return widget.onVideoError?.call() ?? videoErrorWidget;
-                }
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: GetBuilder<PodGetXVideoController>(
+        tag: widget.controller.getTag,
+        builder: (_) {
+          _frameAspectRatio = widget.matchFrameAspectRatioToVideo
+              ? _podCtr.videoCtr?.value.aspectRatio ?? widget.frameAspectRatio
+              : widget.frameAspectRatio;
+          return Center(
+            child: ColoredBox(
+              color: widget.backgroundColor ?? Colors.black,
+              child: GetBuilder<PodGetXVideoController>(
+                tag: widget.controller.getTag,
+                id: 'errorState',
+                builder: (podCtr) {
+                  /// Check if has any error
+                  if (podCtr.podVideoState == PodVideoState.error) {
+                    return widget.onVideoError?.call() ?? videoErrorWidget;
+                  }
 
-                return AspectRatio(
-                  aspectRatio: _frameAspectRatio,
-                  child: podCtr.videoCtr?.value.isInitialized ?? false
-                      ? _buildPlayer()
-                      : Center(child: circularProgressIndicator),
-                );
-              },
+                  return AspectRatio(
+                    aspectRatio: _frameAspectRatio,
+                    child: podCtr.videoCtr?.value.isInitialized ?? false
+                        ? _buildPlayer()
+                        : Center(child: circularProgressIndicator),
+                  );
+                },
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
