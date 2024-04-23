@@ -45,6 +45,7 @@ class PodVideoPlayer extends StatefulWidget {
   final Color? backgroundColor;
   final bool? isCenter;
   final DecorationImage? videoThumbnail;
+    final EdgeInsets? threeDotsPadding;
 
   /// Optional callback, fired when full screen mode toggles.
   ///
@@ -74,6 +75,7 @@ class PodVideoPlayer extends StatefulWidget {
     this.videoThumbnail,
     this.onToggleFullScreen,
     this.onLoading,
+    this.threeDotsPadding,
   }) {
     addToUiController();
   }
@@ -283,6 +285,7 @@ class _PodVideoPlayerState extends State<PodVideoPlayer>
             videoPlayerCtr: podCtr.videoCtr!,
             videoAspectRatio: videoAspectRatio,
             tag: widget.controller.getTag,
+            threeDotsPadding: widget.threeDotsPadding,
           );
         },
       );
@@ -291,6 +294,8 @@ class _PodVideoPlayerState extends State<PodVideoPlayer>
         videoPlayerCtr: _podCtr.videoCtr!,
         videoAspectRatio: videoAspectRatio,
         tag: widget.controller.getTag,
+                    threeDotsPadding: widget.threeDotsPadding,
+
       );
     }
   }

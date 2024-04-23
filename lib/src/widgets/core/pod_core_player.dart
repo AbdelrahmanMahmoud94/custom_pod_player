@@ -4,11 +4,13 @@ class _PodCoreVideoPlayer extends StatelessWidget {
   final VideoPlayerController videoPlayerCtr;
   final double videoAspectRatio;
   final String tag;
+    final EdgeInsets? threeDotsPadding;
 
   const _PodCoreVideoPlayer({
     required this.videoPlayerCtr,
     required this.videoAspectRatio,
     required this.tag,
+      this.threeDotsPadding,
   });
 
   @override
@@ -29,12 +31,18 @@ class _PodCoreVideoPlayer extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              Center(
-                child: AspectRatio(
+              if (podCtr.isFullScreen)
+                Center(
+                  child: AspectRatio(
+                    aspectRatio: videoAspectRatio,
+                    child: VideoPlayer(videoPlayerCtr),
+                  ),
+                )
+              else
+                AspectRatio(
                   aspectRatio: videoAspectRatio,
                   child: VideoPlayer(videoPlayerCtr),
                 ),
-              ),
               GetBuilder<PodGetXVideoController>(
                 tag: tag,
                 id: 'podVideoState',
@@ -68,7 +76,7 @@ class _PodCoreVideoPlayer extends StatelessWidget {
                   },
                 ),
               ),
-              _VideoOverlays(tag: tag),
+              _VideoOverlays(tag: tag,threeDotsPadding: threeDotsPadding,),
               IgnorePointer(
                 child: GetBuilder<PodGetXVideoController>(
                   tag: tag,

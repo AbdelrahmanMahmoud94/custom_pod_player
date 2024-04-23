@@ -2,9 +2,11 @@ part of 'package:pod_player/src/pod_player.dart';
 
 class _MobileOverlay extends StatelessWidget {
   final String tag;
+  final EdgeInsets? threeDotsPadding;
 
   const _MobileOverlay({
     required this.tag,
+    this.threeDotsPadding,
   });
 
   @override
@@ -57,18 +59,24 @@ class _MobileOverlay extends StatelessWidget {
                   child: podCtr.videoTitle ?? const SizedBox(),
                 ),
               ),
-              MaterialIconButton(
-                toolTipMesg: podCtr.podPlayerLabels.settings,
-                color: itemColor,
-                onPressed: () {
-                  if (podCtr.isOverlayVisible) {
-                    _bottomSheet(context);
-                  } else {
-                    podCtr.toggleVideoOverlay();
-                  }
-                },
-                child: const Icon(
-                  Icons.more_vert_rounded,
+              const SizedBox(
+                height: 30,
+              ),
+              Padding(
+                padding: threeDotsPadding ?? const EdgeInsets.all(0),
+                child: MaterialIconButton(
+                  toolTipMesg: podCtr.podPlayerLabels.settings,
+                  color: itemColor,
+                  onPressed: () {
+                    if (podCtr.isOverlayVisible) {
+                      _bottomSheet(context);
+                    } else {
+                      podCtr.toggleVideoOverlay();
+                    }
+                  },
+                  child: const Icon(
+                    Icons.more_vert_rounded,
+                  ),
                 ),
               ),
             ],

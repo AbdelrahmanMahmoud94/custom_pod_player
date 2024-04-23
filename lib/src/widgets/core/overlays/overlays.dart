@@ -2,9 +2,11 @@ part of 'package:pod_player/src/pod_player.dart';
 
 class _VideoOverlays extends StatelessWidget {
   final String tag;
+  final EdgeInsets? threeDotsPadding;
 
   const _VideoOverlays({
     required this.tag,
+    this.threeDotsPadding,
   });
 
   @override
@@ -52,7 +54,11 @@ class _VideoOverlays extends StatelessWidget {
             child: Stack(
               fit: StackFit.passthrough,
               children: [
-                if (!kIsWeb) _MobileOverlay(tag: tag),
+                if (!kIsWeb)
+                  _MobileOverlay(
+                    tag: tag,
+                    threeDotsPadding: threeDotsPadding,
+                  ),
                 if (kIsWeb) _WebOverlay(tag: tag),
               ],
             ),
