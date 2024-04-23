@@ -78,6 +78,9 @@ class _AnimatedPlayPauseIconState extends State<_AnimatedPlayPauseIcon>
     if (podCtr.podVideoState == PodVideoState.loading) {
       return const SizedBox();
     } else {
+      if (podCtr.podVideoState == PodVideoState.playing) {
+        _payCtr.forward();
+      }
       return _playPause(podCtr);
     }
   }
