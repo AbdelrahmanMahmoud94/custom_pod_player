@@ -78,14 +78,17 @@ class _AnimatedPlayPauseIconState extends State<_AnimatedPlayPauseIcon>
     if (podCtr.podVideoState == PodVideoState.loading) {
       return const SizedBox();
     } else {
-      if (podCtr.podVideoState == PodVideoState.playing) {
-        _payCtr.forward();
+      if (podCtr.isvideoPlaying) {
+        if (mounted) _payCtr.forward();
       }
       return _playPause(podCtr);
     }
   }
 
   Widget _playPause(PodGetXVideoController podCtr) {
+    if (podCtr.isvideoPlaying) {
+      if (mounted) _payCtr.forward();
+    }
     return AnimatedIcon(
       icon: AnimatedIcons.play_pause,
       progress: _payCtr,

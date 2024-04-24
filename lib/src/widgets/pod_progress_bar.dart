@@ -1,4 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/instance_manager.dart';
 import 'package:video_player/video_player.dart';
@@ -34,6 +37,7 @@ class _PodProgressBarState extends State<PodProgressBar> {
   late final _podCtr = Get.find<PodGetXVideoController>(tag: widget.tag);
   late VideoPlayerValue? videoPlayerValue = _podCtr.videoCtr?.value;
   bool _controllerWasPlaying = false;
+  bool _onDragStart = false;
 
   void seekToRelativePosition(Offset globalPosition) {
     final box = context.findRenderObject() as RenderBox?;
@@ -55,52 +59,86 @@ class _PodProgressBarState extends State<PodProgressBar> {
       id: 'video-progress',
       builder: (podCtr) {
         videoPlayerValue = podCtr.videoCtr?.value;
-        return LayoutBuilder(
-          builder: (context, size) {
-            return GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              child: _progressBar(size),
-              onHorizontalDragStart: (DragStartDetails details) {
-                if (!videoPlayerValue!.isInitialized) {
-                  return;
-                }
-                _controllerWasPlaying =
-                    podCtr.videoCtr?.value.isPlaying ?? false;
-                if (_controllerWasPlaying) {
-                  podCtr.videoCtr?.pause();
-                }
+        return Stack(
+          alignment: Alignment.bottomCenter,
+          clipBehavior: Clip.none,
+          children: [
+            LayoutBuilder(
+              builder: (context, size) {
+                return GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  child: _progressBar(size),
+                  onHorizontalDragStart: (DragStartDetails details) {
+                    setState(() {
+                      _onDragStart = true;
+                    });
+                    if (!videoPlayerValue!.isInitialized) {
+                      return;
+                    }
+                    _controllerWasPlaying =
+                        podCtr.videoCtr?.value.isPlaying ?? false;
+                    if (_controllerWasPlaying) {
+                      podCtr.videoCtr?.pause();
+                    }
 
-                if (widget.onDragStart != null) {
-                  widget.onDragStart?.call();
-                }
-              },
-              onHorizontalDragUpdate: (DragUpdateDetails details) {
-                if (!videoPlayerValue!.isInitialized) {
-                  return;
-                }
-                podCtr.isShowOverlay(true);
-                seekToRelativePosition(details.globalPosition);
+                    if (widget.onDragStart != null) {
+                      widget.onDragStart?.call();
+                    }
+                  },
+                  onHorizontalDragUpdate: (DragUpdateDetails details) {
+                    if (!videoPlayerValue!.isInitialized) {
+                      return;
+                    }
+                    podCtr.isShowOverlay(true);
+                    seekToRelativePosition(details.globalPosition);
 
-                widget.onDragUpdate?.call();
-              },
-              onHorizontalDragEnd: (DragEndDetails details) {
-                if (_controllerWasPlaying) {
-                  podCtr.videoCtr?.play();
-                }
-                podCtr.toggleVideoOverlay();
+                    widget.onDragUpdate?.call();
+                  },
+                  onHorizontalDragEnd: (DragEndDetails details) {
+                    setState(() {
+                      _onDragStart = false;
+                    });
+                    if (_controllerWasPlaying) {
+                      podCtr.videoCtr?.play();
+                    }
+                    podCtr.toggleVideoOverlay();
 
-                if (widget.onDragEnd != null) {
-                  widget.onDragEnd?.call();
-                }
+                    if (widget.onDragEnd != null) {
+                      widget.onDragEnd?.call();
+                    }
+                  },
+                  onTapDown: (TapDownDetails details) {
+                    if (!videoPlayerValue!.isInitialized) {
+                      return;
+                    }
+                    seekToRelativePosition(details.globalPosition);
+                  },
+                );
               },
-              onTapDown: (TapDownDetails details) {
-                if (!videoPlayerValue!.isInitialized) {
-                  return;
-                }
-                seekToRelativePosition(details.globalPosition);
-              },
-            );
-          },
+            ),
+            if (_onDragStart)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 30,
+                child: Center(
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    color: Colors.black,
+                    child: Text(
+                      _podCtr.calculateVideoDuration(_podCtr.videoPosition),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            else
+              Container(),
+          ],
         );
       },
     );
